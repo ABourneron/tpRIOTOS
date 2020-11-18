@@ -8,6 +8,7 @@ USEMODULE += shell_commands
 USEMODULE += ps
 
 FEATURES_REQUIRED += periph_gpio
+FEATURES_REQUIRED += periph_gpio_irq
 
 DEVELHELP ?= 1
 
