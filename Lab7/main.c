@@ -2,7 +2,7 @@
 #include "shell.h"
 
 #include "thread.h"
-#include "xtimer.h"
+#include "msg.h"
 
 #include "board.h"
 #include "periph/gpio.h"
@@ -19,7 +19,9 @@ static void gpio_cb(void *arg)
 {
     (void) arg;
     
-    thread_wakeup(gpio_update_thread_pid);
+    msg_t msg;
+
+    msg_send(&msg, gpio_update_thread_pid);
 }
 
 void *gpio_update_thread(void *arg)
@@ -31,10 +33,12 @@ void *gpio_update_thread(void *arg)
     
     while(1)
     {
+		msg_t msg;
+        msg_receive(&msg);
+        
 		gpio_toggle(LED2_PIN);
 		
-		//PUT the thread in sleep mode
-		thread_sleep();		
+
 	}
 	
     return NULL;
