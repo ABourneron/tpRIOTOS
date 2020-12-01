@@ -15,7 +15,7 @@
 
 int max31855_init(spi_t bus,spi_cs_t cs) 
 {
-	spi_init_pins(bus);
+	spi_init(bus);
 	return spi_init_cs(bus, cs);
 }
 
@@ -23,17 +23,23 @@ int max31855_readtemp(spi_t bus,spi_cs_t cs,unsigned char* pBuffRes)
 {
 	//spi_acquire (spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 	int err = spi_acquire(bus, cs, SPI_MODE_0, SPI_CLK_100KHZ);
+	if (err != SPI_OK) return -1;
 	
 	//spi_transfer_bytes (spi_t bus, spi_cs_t cs, bool cont, const void *out, void *in, size_t len)
-	spi_transfer_bytes(bus, cs, 1, &pBuffRes, NULL, 4);
+	spi_transfer_bytes(bus, cs, 0, NULL, pBuffRes, 4);
 	
 	//spi_release (spi_t bus)
 	spi_release(bus);
 	
-	return err;
+	return SPI_OK;
 }
 float max31855_decodetemp(unsigned char* pBuffRes)
 {
-  printf("%d %d %d %d\n", pBuffRes[0], pBuffRes[1], pBuffRes[2], pBuffRes[3]);
-  return 0;
+	uint16_t tempInt = ((pBuffRes[0]&0x7F)<<4) + ((pBuffRes[1]&0xF0)>>4);
+	
+	float tempFloat = tempInt + 0.5*((pBuffRes[1]&0x08)>>3) + 0.25*((pBuffRes[1]&0x04)>>2); 
+	
+	//printf("%02x %02x %02x %02x\n", pBuffRes[0], pBuffRes[1], pBuffRes[2], pBuffRes[3]);
+
+  return tempFloat;
 }
