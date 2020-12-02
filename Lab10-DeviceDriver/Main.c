@@ -28,6 +28,7 @@ void *first_thread(void *arg)
 
 int main (void)
 {
+	
 	int err = tsl2561_init(&CapteurLum, &tsl2561_params[0]);
 	if (err != 0) printf("Error/n");
 	
