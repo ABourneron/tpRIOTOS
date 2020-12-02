@@ -1,0 +1,18 @@
+#include <stdio.h>
+#include "shell.h"
+
+#include "xtimer.h"
+#include "board.h"
+
+#include "lib_lcd_backlight.h"
+
+
+int main(void)
+{                     
+	lcd_init(I2C_PORT);
+          
+	                       
+    char line_buf[SHELL_DEFAULT_BUFSIZE];
+    shell_run(NULL, line_buf, SHELL_DEFAULT_BUFSIZE);
+}
+

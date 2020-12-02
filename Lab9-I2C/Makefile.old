@@ -1,0 +1,16 @@
+APPLICATION=HelloWorld
+
+BOARD ?= native
+FEATURES_REQUIRED += periph_i2c
+
+RIOTBASE ?= $(CURDIR)/../../RIOT
+USEMODULE += shell
+USEMODULE += shell_commands
+USEMODULE += ps
+USEMODULE += periph_i2c
+USEMODULE += xtimer
+
+
+DEVELHELP ?= 1
+
+include $(RIOTBASE)/Makefile.include
