@@ -39,7 +39,7 @@ int main (void)
 {
 	//Init du capteur tsl2561 avec retour d'erreur
 	int err = tsl2561_init(&CapteurLum, &tsl2561_params[0]);
-	if (err != 0) printf("Error/n");
+	if (err != 0) printf("Error\n");
 	
 	//création du thread de lecture de la température
 	thread_create(stack, sizeof(stack),
