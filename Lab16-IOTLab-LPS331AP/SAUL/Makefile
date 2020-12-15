@@ -12,6 +12,6 @@ USEMODULE += shell
 USEMODULE += xtimer
 USEMODULE += periph_i2c
 USEMODULE += saul_default
-USEMODULE += lps331ap
+USEMODULE += lpsxxx
 
 include $(RIOTBASE)/Makefile.include
