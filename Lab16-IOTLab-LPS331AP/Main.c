@@ -24,8 +24,8 @@ void *read_sensor(void *arg)
     (void) arg;
     
 	//Pour le capteur saul
-	saul_reg_t *dev;     	//device
-	phydat_t res;           //valeur
+	saul_reg_t *dev = saul_reg_find_name("lps331ap");   	//device
+	phydat_t res;           							//valeur
 	int dim = 0;
 	
 	//test pour s'assurer de la présence d'un device SAUL
@@ -36,19 +36,22 @@ void *read_sensor(void *arg)
     }
     
     while(1){
+		//"deplacement" du device sur le capteur de Pression
 		dev = saul_reg_find_name("lps331ap");
 		
-		//Appel de la fonction de lecture
+		//Appel de la fonction de lecture sur le capteur de Pression
 		dim = saul_reg_read(dev, &res);
+		//Mise en forme et affichage de la valeur recue
+		printf("Pression\n");
         phydat_dump(&res, dim);
 
+		//"deplacement" du device sur le capteur de Température
         dev = dev->next;
         
         dim = saul_reg_read(dev, &res);
+        printf("Température\n");
         phydat_dump(&res, dim);
-
-		//printf("\nDev: %s\tType: %s\n", dev->name, saul_class_to_str(dev->driver->type));
-		
+	
 		//Sleep pendant 5s
 		xtimer_usleep(5000000);
 		}
