@@ -15,9 +15,11 @@
 #include "hashes/sha256.h"
 
 #include "board.h"
+#include "xtimer.h"
 
 #include "lpsxxx.h"
 #include "lpsxxx_params.h"
+
 
 /* internal value that can be read/written via CoAP */
 static uint8_t internal_value = 0;
@@ -164,6 +166,7 @@ ssize_t _sha256_handler(coap_pkt_t* pkt, uint8_t *buf, size_t len, void *context
     return pkt_pos - (uint8_t*)pkt->hdr;
 }
 
+
 //PARTIE MODIFIEE
 /*ssize_t coap_reply_simple 	( 	coap_pkt_t *  	pkt,
 		unsigned  	code,
@@ -175,40 +178,60 @@ ssize_t _sha256_handler(coap_pkt_t* pkt, uint8_t *buf, size_t len, void *context
 	) 	*/
 static ssize_t _press_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
 {
-	//Fonction appellée par un GET sur /polytech
+	//Fonction appellée par un GET sur /press
     (void)context;
+    
+	ssize_t p = 0;
+	char rsp[18];
 	
-	char * str = "";
-
-	lpsxxx_t dev;
 	uint16_t pres;
-	
+
+	//Init et enable du device
+	lpsxxx_t dev;
 	lpsxxx_enable(&dev);
+	xtimer_sleep(1);
+
+	//Lecture de la pression
 	lpsxxx_read_pres(&dev, &pres);
-	
-	snprintf(str, 30, "Pressure value: %ihPa\n", pres);
-	
+	//Arret du device
 	lpsxxx_disable(&dev);
-	    
+
+	//Conversion au format COAP
+	p += fmt_u32_dec(rsp, pres);
+
     //Renvoi d'une chaine de char en sortie
     return coap_reply_simple(pkt, COAP_CODE_205, buf, len,
-            COAP_FORMAT_TEXT, (uint8_t*)str, strlen(str));
+            COAP_FORMAT_TEXT, (uint8_t*)rsp, p);
 }
 
 static ssize_t _temp_handler(coap_pkt_t *pkt, uint8_t *buf, size_t len, void *context)
 {
-	//Fonction appellée par un GET sur /dublin
+	//Fonction appellée par un GET sur /temp
     (void)context;
     
-    char * str = "On PaSsE qUaNd NoTrE ToEiC ^^";
-    
+	ssize_t p = 0;
+	char rsp[18];
+	
+	uint16_t temp;
+
+	//Init et enable du device
+	lpsxxx_t dev;
+	lpsxxx_enable(&dev);
+	xtimer_sleep(1);
+
+	//Lecture de la temperature
+	lpsxxx_read_pres(&dev, &temp);
+	lpsxxx_disable(&dev);
+
+	//Conversion au format COAP
+	p += fmt_u32_dec(rsp, temp);
+
     //Renvoi d'une chaine de char en sortie
     return coap_reply_simple(pkt, COAP_CODE_205, buf, len,
-            COAP_FORMAT_TEXT, (uint8_t*)str, strlen(str));
+            COAP_FORMAT_TEXT, (uint8_t*)rsp, p);
 }
 
 /* must be sorted by path (ASCII order) */
-//Ajout des ressources /dublin et /polytech sur des GET avec appel des fonctions ci-dessus.
 const coap_resource_t coap_resources[] = {
     COAP_WELL_KNOWN_CORE_DEFAULT_HANDLER,
     { "/echo/", COAP_GET | COAP_MATCH_SUBTREE, _echo_handler, NULL },

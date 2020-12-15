@@ -22,6 +22,7 @@
 #include "net/nanocoap_sock.h"
 #include "xtimer.h"
 
+
 #define COAP_INBUF_SIZE (256U)
 
 #define MAIN_QUEUE_SIZE     (8)
@@ -48,6 +49,9 @@ int main(void)
     uint8_t buf[COAP_INBUF_SIZE];
     sock_udp_ep_t local = { .port=COAP_PORT, .family=AF_INET6 };
     nanocoap_server(&local, buf, sizeof(buf));
+    
+    puts("Config OK");
+
 
     /* should be never reached */
     return 0;
